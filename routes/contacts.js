@@ -17,9 +17,34 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-router.post('/', (req, res) => {
-  res.send('Add contact');
-});
+router.post(
+  '/',
+  [auth, [body('name').not().isEmpty().withMessage('Name is required')]],
+  async (req, res) => {
+    const err = validationResult(req);
+    if (!err.isEmpty()) {
+      return res.status(400).json({ errors: err.array() });
+    }
+
+    const { name, email, phone, type } = req.body;
+
+    try {
+      const newContact = new Contact({
+        user: req.user.id,
+        name,
+        email,
+        phone,
+        type,
+      });
+
+      const contact = await newContact.save();
+      res.json(contact);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
 
 router.put('/:id', (req, res) => {
   res.send('Update contact');
