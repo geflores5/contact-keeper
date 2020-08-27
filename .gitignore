@@ -1,2 +1,8 @@
 node_modules/
+
+/client/build
+
+.DS_Store
+/client/config
+
 config/default.json
